@@ -43,12 +43,12 @@ class AutoLiker:
                 password_input.send_keys(self.password)
                 password_input.send_keys(Keys.RETURN)
                 print('Logged in Success !!')
-        
-            # 通知をONにするのポップアップが出る可能性を考慮
+
+                # 通知をONにするのポップアップが出る可能性を考慮
                 try:
                     mention_popup_close = self.find_by_class_name(CLASS_NAME_MENTION_CLOSE)[0].click()
                 except:
-                   print('Popup Close Failed !!') 
+                   print('Popup Close Failed !!')
         except:
             print('Logged In Failed !!')
 
@@ -61,24 +61,37 @@ class AutoLiker:
 
             self.like_count = 0
             while self.like_count < self.max_like_count:
-                # いいねボタンが押下済みでないか確認
-                like_span_label = self.driver.find_by_class_name(CLASS_NAME_FAVO_SPAN)[0]
-                print(like_span_label)
-                break
+                try:
+                    # いいねボタンが押下済みでないか確認
+                    like_span_label = self.find_by_class_name(CLASS_NAME_FAVO_SPAN)
+                    try:
+                        self.find_by_class_name(CLASS_NAME_FAVO)[0].click()
+                        self.like_count += 1
+                    except:
+                        print('Like Failed !!')
+                except:
+                    print('Like Already !!')
 
                 try:
-                    self.find_by_class_name(CLASS_NAME_FAVO)[0].click()
-                    self.like_count += 1
                     self.find_by_class_name(CLASS_NAME_NEXT)[0].click()
                 except:
+                    print('All Likes Success !!')
                     break
         except:
             print('Likes Failed !!')
-
+        finally:
+            self.driver.close()
 
     def find_by_class_name(self, class_name):
-        WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.CLASS_NAME, class_name)))
+        WebDriverWait(self.driver, WAIT_SEC_ELEMENT_VISIBLE).until(EC.presence_of_element_located((By.CLASS_NAME, class_name)))
         return self.driver.find_elements_by_class_name(class_name)
+
+    def find_by_xpath(self, xpath):
+        print(xpath)
+
+        WebDriverWait(self.driver, WAIT_SEC_ELEMENT_VISIBLE).until(EC.presence_of_element_located((By.XPATH, xpath)))
+        print(xpath)
+        return self.driver.find_element_by_xpath(xpath)
     
     def get_result(self):
         return {
