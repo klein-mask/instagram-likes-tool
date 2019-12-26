@@ -14,7 +14,7 @@ from .config import *
 
 class AutoLiker:
 
-    def __init__(self, *, username, password, hashtag, max_like_count=10):
+    def __init__(self, *, username, password, hashtag, max_like_count=10, headless=True):
         self.username = username
         self.password= password
         self.hashtag = hashtag
@@ -23,7 +23,8 @@ class AutoLiker:
         self.like_count = 0
 
         options = Options()
-        options.add_argument('--headless')
+        if headless:
+            options.add_argument('--headless')
         self.driver = webdriver.Chrome(options=options)
 
 

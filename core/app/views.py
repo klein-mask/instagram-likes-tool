@@ -22,7 +22,7 @@ class ResultView(TemplateView):
         if form.is_valid():
             d = form.cleaned_data
 
-            autoliker = AutoLiker(username=d['username'], password=d['password'], hashtag=d['hashtag'], max_like_count=d['max_like_count'])
+            autoliker = AutoLiker(username=d['username'], password=d['password'], hashtag=d['hashtag'], max_like_count=d['max_like_count'], headless=False)
             autoliker.start()
 
             context['result'] = autoliker.get_result()
