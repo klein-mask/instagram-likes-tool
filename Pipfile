@@ -6,6 +6,9 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+django = "*"
+selenium = "*"
+chromedriver-binary = "==79.0.3945.36"
 
 [requires]
 python_version = "3.7"
