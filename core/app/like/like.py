@@ -23,7 +23,7 @@ class AutoLiker:
         self.like_count = 0
 
         options = Options()
-        #options.add_argument('--headless')
+        options.add_argument('--headless')
         self.driver = webdriver.Chrome(options=options)
 
 
@@ -87,8 +87,6 @@ class AutoLiker:
         return self.driver.find_elements_by_class_name(class_name)
 
     def find_by_xpath(self, xpath):
-        print(xpath)
-
         WebDriverWait(self.driver, WAIT_SEC_ELEMENT_VISIBLE).until(EC.presence_of_element_located((By.XPATH, xpath)))
         print(xpath)
         return self.driver.find_element_by_xpath(xpath)

@@ -14,8 +14,6 @@ CLASS_NAME_AUTH = '_2hvTZ'
 
 CLASS_NAME_LOGIN = 'sqdOP'
 
-XPATH_FAVO_SPAN = '//button[@class={}]'.format(CLASS_NAME_FAVO)
-
 CLASS_NAME_FAVO_SPAN = 'glyphsSpriteHeart__outline__24__grey_9'
 
 WAIT_SEC_ELEMENT_VISIBLE = 3
