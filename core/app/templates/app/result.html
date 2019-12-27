@@ -7,6 +7,9 @@
     <tr><td>対象のハッシュタグ</td><td>{{ result.hashtag }}</td></tr>
     <tr><td>成功いいね数</td><td>{{ result.like_count }}</td></tr>
 </table>
+<div class="text-center">
+	<a href="{% url 'app:setup' %}" class="btn btn-outline-info mr-3" role="button">もう一度実行する</a>
+</div>
 {% else %}
 <h3 class="text-center my-4">いいねに失敗しました。通信状況等を確認してください</h3>
 <div class="text-center">

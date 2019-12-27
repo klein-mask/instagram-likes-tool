@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
-from .forms import InputForm
+from .forms import IndexForm, SetupForm
 from .like.like import AutoLiker
 
 
@@ -9,8 +9,30 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = InputForm()
+        context['form'] = IndexForm()
         return context
+
+
+class SetupView(TemplateView):
+    template_name = 'app/setup.html'
+
+    def get(self, request, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = SetupForm()
+
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = SetupForm()
+
+        form = IndexForm(request.POST)
+        if form.is_valid():
+            d = form.cleaned_data
+            request.session['username'] = d.get('username')
+            request.session['password'] = d.get('password')
+
+        return self.render_to_response(context)
 
 
 class ResultView(TemplateView):
@@ -18,13 +40,19 @@ class ResultView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        form = InputForm(request.POST)
+
+        form = SetupForm(request.POST)
         if form.is_valid():
             d = form.cleaned_data
+            request.session['hashtag'] = d.get('hashtag')
 
-            autoliker = AutoLiker(username=d['username'], password=d['password'], hashtag=d['hashtag'], max_like_count=d['max_like_count'], headless=False)
-            autoliker.start()
+            # 自動いいね
 
-            context['result'] = autoliker.get_result()
+            autoliker = AutoLiker()
+            autoliker.set_account(username=request.session.get('username'), password=request.session.get('password'))
+            autoliker.set_hashtag(hashtag=d.get('hashtag'), max_like_count=d.get('max_like_count'))
+
+            # 結果を返す
+            context['result'] = autoliker.start()
 
         return self.render_to_response(context)

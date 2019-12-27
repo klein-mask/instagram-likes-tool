@@ -6,31 +6,49 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
+
 import chromedriver_binary
 import urllib.parse
 
 from .config import *
 
-
 class AutoLiker:
 
-    def __init__(self, *, username, password, hashtag, max_like_count=10, headless=True):
+    def __init__(self, *, headless=False):
+        self.username       = ''
+        self.password       = ''
+        self.hashtag        = ''
+        self.max_like_count = 10
+        self.like_count     = 0
+        self.driver         = None
+        self.headless       = headless
+
+    def set_account(self, *, username, password):
         self.username = username
-        self.password= password
-        self.hashtag = hashtag
+        self.password = password
+
+    def set_hashtag(self, *, hashtag, max_like_count=10):
+        self.hashtag        = hashtag
         self.max_like_count = max_like_count
 
-        self.like_count = 0
-
-        options = Options()
-        if headless:
-            options.add_argument('--headless')
-        self.driver = webdriver.Chrome(options=options)
-
-
     def start(self):
-        self.login()
-        self.likes()
+        options = Options()
+        if self.headless:
+            options.add_argument('--headless')
+        try:
+            self.driver = webdriver.Chrome(options=options)
+            self.login()
+            self.likes()
+        except:
+            print('Driver Error !!')
+        finally:
+            if self.driver is not None:
+                self.driver.close()
+        
+        return {
+            'hashtag': self.hashtag,
+            'like_count': self.like_count,
+        }
 
     def login(self):
         try:
@@ -40,6 +58,9 @@ class AutoLiker:
             if len(auth_inputs) >= 2:
                 username_input = auth_inputs[0]
                 password_input = auth_inputs[1]
+                print(self.username)
+                print(self.password)
+
                 username_input.send_keys(self.username)
                 password_input.send_keys(self.password)
                 password_input.send_keys(Keys.RETURN)
@@ -80,20 +101,9 @@ class AutoLiker:
                     break
         except:
             print('Likes Failed !!')
-        finally:
-            self.driver.close()
+
 
     def find_by_class_name(self, class_name):
         WebDriverWait(self.driver, WAIT_SEC_ELEMENT_VISIBLE).until(EC.presence_of_element_located((By.CLASS_NAME, class_name)))
         return self.driver.find_elements_by_class_name(class_name)
 
-    def find_by_xpath(self, xpath):
-        WebDriverWait(self.driver, WAIT_SEC_ELEMENT_VISIBLE).until(EC.presence_of_element_located((By.XPATH, xpath)))
-        print(xpath)
-        return self.driver.find_element_by_xpath(xpath)
-    
-    def get_result(self):
-        return {
-            'hashtag': self.hashtag,
-            'like_count': self.like_count,
-        }
